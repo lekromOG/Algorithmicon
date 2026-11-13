@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="description" content="Algorithmicon is a library of 18 graph algorithms you can run, pause and rewind: searches, shortest paths, spanning trees, components, flows, matchings and Euler tours.">
+    <title>Algorithmicon</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body data-line="paths">
+    <a class="skip-link" href="#workbench">Skip to the workbench</a>
+
+    <header class="masthead">
+        <div class="wrap masthead-row">
+            <a class="wordmark" href="#top">Algorithmicon</a>
+            <nav aria-label="Sections">
+                <a href="#workbench">Workbench</a>
+                <a href="#route">How it works</a>
+                <a href="#catalog">All algorithms</a>
+            </nav>
+            <button type="button" class="theme-toggle" id="theme-toggle">Dark mode</button>
+        </div>
+    </header>
+
+    <main id="top">
+        <section class="wrap intro">
+            <h1>Graph algorithms, one decision at a time</h1>
+            <p>Algorithmicon is a library of 18 graph algorithms you can run, pause and rewind. Pick a line, pick an algorithm and follow every decision it makes, with the reason spelled out at each step.</p>
+        </section>
+
+        <section class="wrap workbench" id="workbench" aria-labelledby="workbench-title">
+            <h2 class="visually-hidden" id="workbench-title">Workbench</h2>
+
+            <fieldset class="line-picker" id="line-picker">
+                <legend class="visually-hidden">Group of algorithms</legend>
+            </fieldset>
+            <fieldset class="stop-picker" id="stop-picker"></fieldset>
+
+            <div class="bench-grid">
+                <div class="bench-main">
+                    <div class="stage-frame">
+                        <div class="stage-scroll">
+                            <svg id="stage" viewBox="0 0 1000 620" role="img" aria-label="Graph"></svg>
+                        </div>
+                        <ul class="legend">
+                            <li><span class="key key-active"></span>Being examined</li>
+                            <li><span class="key key-chosen"></span>Part of the result</li>
+                            <li><span class="key key-rejected"></span>Rejected, cut or cyclic</li>
+                            <li class="legend-hint">Drag a vertex to move it</li>
+                        </ul>
+                    </div>
+
+                    <div class="narration">
+                        <p class="step-count" id="step-count">Step 1 of 1</p>
+                        <p class="step-text" id="step-text" aria-live="polite">Loading the workbench.</p>
+                    </div>
+
+                    <div class="transport">
+                        <label class="visually-hidden" for="scrub">Step</label>
+                        <input type="range" id="scrub" min="0" max="0" value="0" step="1">
+                        <div class="transport-row">
+                            <button type="button" id="btn-first">Restart</button>
+                            <button type="button" id="btn-prev">Back</button>
+                            <button type="button" id="btn-play" class="primary" aria-pressed="false">Play</button>
+                            <button type="button" id="btn-next">Next</button>
+                            <label class="speed">Speed
+                                <select id="speed">
+                                    <option value="1600">Slow</option>
+                                    <option value="900" selected>Normal</option>
+                                    <option value="400">Fast</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="bench-side" aria-label="Graph and algorithm settings">
+                    <p class="reads" id="algo-reads"></p>
+
+                    <div class="side-group" id="ends-group">
+                        <div class="field-row">
+                            <label class="field" id="source-field">Start vertex
+                                <select id="source-select"></select>
+                            </label>
+                            <label class="field" id="sink-field">End vertex
+                                <select id="sink-select"></select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="side-group">
+                        <h3>Working table</h3>
+                        <div class="state-table" id="state-table" tabindex="0" role="region" aria-label="Working table for the current step"></div>
+                    </div>
+
+                    <div class="side-group">
+                        <h3>Graph</h3>
+                        <div class="button-row">
+                            <button type="button" id="btn-example">Load example</button>
+                            <button type="button" id="btn-negative">Load negative cycle</button>
+                        </div>
+                        <div class="field-row">
+                            <label class="field">Vertices
+                                <input type="number" id="vertex-count" min="2" max="14" step="1" value="6" inputmode="numeric">
+                            </label>
+                            <label class="field">Edges
+                                <input type="number" id="edge-count" min="1" max="15" step="1" value="9" inputmode="numeric">
+                            </label>
+                            <button type="button" id="btn-generate">Generate random</button>
+                        </div>
+                        <label class="field" for="edge-list">Edge list</label>
+                        <textarea id="edge-list" rows="7" maxlength="2000" spellcheck="false" autocomplete="off" aria-describedby="edge-help graph-error"></textarea>
+                        <p class="help" id="edge-help">One edge per line: from, to, weight. Vertices are the letters A to N.</p>
+                        <p class="error" id="graph-error" role="alert"></p>
+                        <button type="button" id="btn-apply">Apply edge list</button>
+                    </div>
+                </aside>
+            </div>
+            <noscript><p class="error">Algorithmicon needs JavaScript to run the algorithms.</p></noscript>
+        </section>
+
+        <section class="wrap route" id="route" aria-labelledby="route-title">
+            <header class="route-head">
+                <span class="line-badge" id="route-badge" aria-hidden="true"></span>
+                <div>
+                    <h2 id="route-title">How it works</h2>
+                    <p id="route-summary"></p>
+                </div>
+            </header>
+            <div class="route-grid">
+                <ol class="stations" id="route-stations"></ol>
+                <dl class="facts" id="route-facts"></dl>
+            </div>
+        </section>
+
+        <section class="wrap catalog" id="catalog" aria-labelledby="catalog-title">
+            <h2 id="catalog-title">All algorithms</h2>
+            <p class="section-lead">Eighteen algorithms on six lines. Choose one to load it on the workbench with its own example.</p>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr><th scope="col">Algorithm</th><th scope="col">Answers</th><th scope="col">Graph</th><th scope="col">Time</th></tr>
+                    </thead>
+                    <tbody id="catalog-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="wrap footer">
+        <p>Algorithmicon runs entirely in your browser. Nothing you type leaves this page.</p>
+    </footer>
+
+    <script src="js/module.js" defer></script>
+    <script src="js/traversal.js" defer></script>
+    <script src="js/shortest-paths.js" defer></script>
+    <script src="js/bellman-ford.js" defer></script>
+    <script src="js/kruskal.js" defer></script>
+    <script src="js/spanning.js" defer></script>
+    <script src="js/components.js" defer></script>
+    <script src="js/fulkerson.js" defer></script>
+    <script src="js/matching.js" defer></script>
+    <script src="js/euler-path.js" defer></script>
+    <script src="js/tours.js" defer></script>
+    <script src="js/catalog.js" defer></script>
+    <script src="js/graph-builder.js" defer></script>
+    <script src="js/view.js" defer></script>
+    <script src="js/app.js" defer></script>
+</body>
+</html>
